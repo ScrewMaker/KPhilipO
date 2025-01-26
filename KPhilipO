@@ -1,0 +1,15 @@
+-- List of script URLs
+local scriptURLs = {
+    "https://raw.githubusercontent.com/ScrewMaker/AimS/refs/heads/main/Aims",
+    "https://raw.githubusercontent.com/ScrewMaker/BxHit/refs/heads/main/BxHit",
+    "https://raw.githubusercontent.com/ScrewMaker/ItFlies/refs/heads/main/Flies",
+    "https://raw.githubusercontent.com/ScrewMaker/SilentKill/refs/heads/main/SK",
+    "https://raw.githubusercontent.com/ScrewMaker/-Esp/refs/heads/main/%40%26%E2%82%AC",
+    "https://raw.githubusercontent.com/ScrewMaker/Ambient/refs/heads/main/Amb"
+}
+
+-- Execute each script from the URLs
+for _, url in ipairs(scriptURLs) do
+    local scriptContent = game:HttpGet(url)
+    loadstring(scriptContent)()
+end
