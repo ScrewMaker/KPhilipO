@@ -417,7 +417,7 @@ RunService.RenderStepped:Connect(onRenderStepped)
 
 -- Removed the UI and tab-related code
 
-    local rep = cloneref(game:GetService("ReplicatedStorage"))
+local rep = cloneref(game:GetService("ReplicatedStorage"))
 local ogmod = rep.Shared.entities.Player.Model
 
 local oldindex1
@@ -425,11 +425,11 @@ oldindex1 = hookmetamethod(game, "__index", newcclosure(function(self, index)
     if not checkcaller() and (index == "CanCollide" or index == "Transparency" or index == "Size") and (self.Name == "Torso" or self.Name == "Head") then
         return ogmod[self.Name][index]
     end
-    return oldindex1(self,index)
+    return oldindex1(self, index)
 end))
 
 local char = {}
-local h = { enabled = true, sizeX = 15, sizeY = 15, sizeZ = 15 }
+local h = { enabled = true, sizeX = 14, sizeY = 14, sizeZ = 14 }
 local maxSize = 50
 local processedCache = {}
 
@@ -444,6 +444,18 @@ function char:updatehitbox()
                     t.Transparency = h.enabled and 0.8 or 0
                 end
                 processedCache[v] = true
+            end
+        end
+    end
+
+    -- Handle NPCs
+    for _, npc in pairs(workspace:GetChildren()) do
+        if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("Torso") then
+            local t = npc:FindFirstChild("Torso")
+            if t then
+                t.Size = h.enabled and Vector3.new(h.sizeX, h.sizeY, h.sizeZ) or Vector3.new(0.6530659198760986, 2.220424175262451, 1.4367451667785645)
+                t.CanCollide = false
+                t.Transparency = h.enabled and 0.8 or 0
             end
         end
     end
@@ -571,7 +583,7 @@ mt.__namecall = function(...)
     if method == "FireServer" then
         local eventId, eventType, hitPart = args[2], args[3], args[7]
 
-        if eventId == 10 and eventType == "Hit" and hitPart == "Torso" or hitPart == "Head" then
+        if eventId == 10 and eventType == "Hit" and (hitPart == "Torso" or hitPart == "Head") then
             local genVector = char:GenVector(args[9])
             args[8] = Vector3.new(genVector.X, genVector.Y, genVector.Z)
         end
@@ -587,7 +599,7 @@ local oldIndex = meta.__namecall
 meta.__namecall = function(...)
     local method = getnamecallmethod()
     local args = {...}
-    if args[2] == 10 and args[3] == "Hit" and args[7] == "Torso" and hitboxoverrider then
+    if args[2] == 10 and args[3] == "Hit" and args[7] == "Torso" and hitboxOverrider then
         args[7] = "Head"
     end
     return oldIndex(table.unpack(args))
