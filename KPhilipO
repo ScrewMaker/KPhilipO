@@ -429,7 +429,7 @@ oldindex1 = hookmetamethod(game, "__index", newcclosure(function(self, index)
 end))
 
 local char = {}
-local h = { enabled = true, sizeX = 17, sizeY = 17, sizeZ = 17 }
+local h = { enabled = true, sizeX = 15, sizeY = 15, sizeZ = 15 }
 local maxSize = 50
 local processedCache = {}
 
@@ -693,7 +693,7 @@ local settings = {
     },
     silentFarm = {
         enabled = true,
-        speed = 0.05,
+        speed = 2,
         distance = 10,
         entities = {"Cactus", "Tree", "Nitrate", "Stone", "Iron"}
     },
