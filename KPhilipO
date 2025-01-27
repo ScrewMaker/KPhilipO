@@ -1,61 +1,61 @@
 getgenv().whitelisted = true
---[[ warn("Wait 7 Seconds Script Is Loading!")
-wait(0.1)
-repeat
-    wait(0.1)
-until game:IsLoaded()
+--[[                        warn("Wait 7 Seconds Script Is Loading!")
+                            wait(0.1)
+                            repeat
+                                wait(0.1)
+                            until game:IsLoaded()
 
-wait(7)
-
-local Crash = function()
-    while true do end
-end
-local Kick = clonefunction(game.Players.LocalPlayer.Kick);
---
-local HookedCheck = function(func)
-    if islclosure(func) then
-        return true;
-    end
-    local info = debug.getinfo(func)
-    if info.source ~= "=[C]" or info.short_src ~= "[C]" or info.what ~= "C" then
-        return true;
-    end
-    return false;
-end
---
-local success, error = pcall(function()
-    loadstring("\t\t")()
-    loadstring("getgenv().whitelisted = true")();
-end)
-if not success then
-    Kick(Codes["Check"]["TamperingDetected"]); Crash();
-end
-if not getgenv().whitelisted then Kick(Codes["Check"]["TamperingDetected"]) end
-if game:GetService("RunService"):IsStudio() then Kick(Codes["Check"]["TamperingDetected"]); Crash(); end
---
-if pcall(islclosure) then
-    if debugeverything then
-        print("islclosure"); return;
-    end
-    Crash();
-end;
-if not request or HookedCheck(islclosure) or HookedCheck(debug.getinfo) or HookedCheck(request) then
-    if debugeverything then
-        print("http spy"); return;
-    end
-    Crash();
-end
---
-local CheckAllThese = {math.random, os.clock, string.char, string.byte, pcall, setfenv, iscclosure, loadstring, math.floor, string.sub}
-for i = 1, #CheckAllThese do
-    if (pcall(setfenv, CheckAllThese[i], {})) or (HookedCheck(CheckAllThese[i])) then
-        if debugeverything then
-            print("checkallthese"); return;
-        end
-        Crash();
-    end
-end
---- dont mess with above ---
+                            wait(7)
+                            
+                            local Crash = function()
+                                while true do end
+                            end
+                            local Kick = clonefunction(game.Players.LocalPlayer.Kick);
+                            --
+                            local HookedCheck = function(func)
+                                if islclosure(func) then
+                                    return true;
+                                end
+                                local info = debug.getinfo(func)
+                                if info.source ~= "=[C]" or info.short_src ~= "[C]" or info.what ~= "C" then
+                                    return true;
+                                end
+                                return false;
+                            end
+                            --
+                            local success, error = pcall(function()
+                                loadstring("\t\t")()
+                                loadstring("getgenv().whitelisted = true")();
+                            end)
+                            if not success then
+                                Kick(Codes["Check"]["TamperingDetected"]); Crash();
+                            end
+                            if not getgenv().whitelisted then Kick(Codes["Check"]["TamperingDetected"]) end
+                            if game:GetService("RunService"):IsStudio() then Kick(Codes["Check"]["TamperingDetected"]); Crash(); end
+                            --
+                            if pcall(islclosure) then
+                                if debugeverything then
+                                    print("islclosure"); return;
+                                end
+                                Crash();
+                            end;
+                            if not request or HookedCheck(islclosure) or HookedCheck(debug.getinfo) or HookedCheck(request) then
+                                if debugeverything then
+                                    print("http spy"); return;
+                                end
+                                    Crash();
+                                end
+                            --
+                            local CheckAllThese = {math.random, os.clock, string.char, string.byte, pcall, setfenv, iscclosure, loadstring, math.floor, string.sub}
+                            for i = 1, #CheckAllThese do
+                                if (pcall(setfenv, CheckAllThese[i], {})) or (HookedCheck(CheckAllThese[i])) then
+                                    if debugeverything then
+                                        print("checkallthese"); return;
+                                    end
+                                    Crash();
+                                end
+                            end
+                        --- dont mess with above ---
 ]]
 loadstring(game:HttpGet("https://raw.githubusercontent.com/SWIMHUBISWIMMING/cracked/refs/heads/main/surge.gg/assets/drawing"))()
 
@@ -93,7 +93,7 @@ local RunService = game:GetService("RunService")
 
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2,Camera.ViewportSize.Y/2)
-FOVCircle.Radius = 70
+FOVCircle.Radius = 40
 FOVCircle.Color = Color3.fromRGB(45, 116, 202)
 FOVCircle.Visible = true
 
@@ -115,12 +115,12 @@ getgenv().SilentEnabled = true
 Config = {
     Manipulation = {
         Enabled = true,
-        Angles = 40,
+        Angles = 5,
         Radius = 6,
         Direction = "Normal",
         Vector = Vector3.new(0, 0, 0)
     },
-}
+} 
 
 local modules = {
     ["PlayerClient"] = {},
@@ -204,7 +204,7 @@ local CharacterList = debug.getupvalues(modules.Character.getGroundCastResult)
 
 local function GetProjectileInfo()
     local equippedItem = CharacterList[2].GetEquippedItem()
-
+    
     if equippedItem == nil then
         return 0, 0
     else
@@ -227,66 +227,30 @@ getgenv().Predict = function(Player, Velocity)
         while true do
             if Player.Position then
                 local Dist = (Player.Position - Cam.CFrame.Position).Magnitude
-
+                
                 if Dist > 0 then
                     local TimeToHit = Dist / PSpeed 
-
+                    
                     local PPos1 = Player.Position + (Velocity * TimeToHit * 3.4)
-
+                    
                     local Drop = -PDrop ^ (TimeToHit * PDrop) + 1.1
                     local PPos = PPos1 - Vector3.new(0, Drop, 0)
-
+                    
                     return PPos, TimeToHit
                 end
             end
-
+            
             wait()
         end
     end
-
-    return Vector3.new(0, 0, 0), nil
-end
-
--- Magic Bullet Teleport Logic
-local function teleportBulletToPlayer(bullet, player)
-    if bullet and player and player:FindFirstChild("Head") then
-        local playerPos = player.Head.Position
-        -- Move the bullet directly to the player if it's near enough
-        local distance = (bullet.Position - playerPos).Magnitude
-        if distance < 5 then  -- You can adjust this threshold as necessary
-            bullet.CFrame = CFrame.new(playerPos)  -- Teleport the bullet to the player's position
-        end
-    end
-end
-
-local function onShotFired(bullet, target)
-    -- Predict the target's position
-    local predictedPos, _ = getgenv().Predict(target, getgenv().PlayersVelocity)
     
-    -- Simulate the bullet's travel to the predicted position
-    while bullet and target and target:FindFirstChild("Head") do
-        local bulletPosition = bullet.Position
-        local targetPosition = target.Head.Position
-
-        -- Calculate the bullet's direction
-        local direction = (predictedPos - bulletPosition).unit
-        local speed = 100  -- Bullet speed, adjust accordingly
-        bullet.Position = bulletPosition + direction * speed * game:GetService("RunService").Heartbeat:Wait()
-
-        -- Teleport the bullet to the player when it's near
-        teleportBulletToPlayer(bullet, target)
-
-        -- Stop if the bullet is very close to the target
-        if (bullet.Position - targetPosition).Magnitude < 5 then
-            break
-        end
-    end
+    return Vector3.new(0, 0, 0), nil
 end
 
 local OldHook
 local StackLVL = nil
 
-OldHook = hookmetamethod(Random.new(), "__namecall", newcclosure(function(self, ...) 
+OldHook = hookmetamethod(Random.new(), "__namecall", newcclosure(function(self, ...) -- swimhub moment
     if StackLVL == nil then
         local Executor = identifyexecutor()
 
@@ -465,38 +429,24 @@ oldindex1 = hookmetamethod(game, "__index", newcclosure(function(self, index)
 end))
 
 local char = {}
-local h = { enabled = true, sizeX = 14, sizeY = 14, sizeZ = 14 }
+local h = { enabled = false, sizeX = 1, sizeY = 1, sizeZ = 1 }
 local maxSize = 50
 local processedCache = {}
 
-function char:updatehitbox()
-    for _, v in pairs(PlayerList) do
-        if not processedCache[v] then
-            if v.type == "Player" and v.model:FindFirstChild("HumanoidRootPart") and not v.sleeping then
-                local t = v.model:FindFirstChild("Torso")
-                if t then
-                    t.Size = h.enabled and Vector3.new(h.sizeX, h.sizeY, h.sizeZ) or Vector3.new(0.6530659198760986, 2.220424175262451, 1.4367451667785645)
-                    t.CanCollide = false
-                    t.Transparency = h.enabled and 0.8 or 0
-                end
-                processedCache[v] = true
-            end
-        end
-    end
-
-    -- Handle NPCs
-    for _, npc in pairs(workspace:GetChildren()) do
-        if npc:IsA("Model") and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("Torso") then
-            local t = npc:FindFirstChild("Torso")
-            if t then
-                t.Size = h.enabled and Vector3.new(h.sizeX, h.sizeY, h.sizeZ) or Vector3.new(0.6530659198760986, 2.220424175262451, 1.4367451667785645)
-                t.CanCollide = false
-                t.Transparency = h.enabled and 0.8 or 0
-            end
+-- Function to update the hitbox for both players and NPCs
+function char:updatehitbox(v)
+    if v and v.model then
+        local humanoidRootPart = v.model:FindFirstChild("HumanoidRootPart")
+        local torso = v.model:FindFirstChild("Torso")
+        if torso then
+            torso.Size = h.enabled and Vector3.new(h.sizeX, h.sizeY, h.sizeZ) or Vector3.new(0.6530659198760986, 2.220424175262451, 1.4367451667785645)
+            torso.CanCollide = false
+            torso.Transparency = h.enabled and 0.8 or 0
         end
     end
 end
 
+-- Function to check and enforce max size constraints
 local function checkSizes()
     local naughty = false
     if h.sizeX > maxSize then
@@ -513,20 +463,24 @@ local function checkSizes()
     end
     if naughty then
         local Player = game:GetService("Players").LocalPlayer
-        -- Uncomment to kick player if they exceed size limits
-        -- Player:Kick("Reason Expected You Overided A Check In Script")
+        -- Uncomment this to kick the player for exceeding size limits
+        -- Player:Kick("Reason Expected You Overrided A Check In Script")
     end
 end
 
+-- Update hitbox when a new child is added to the workspace
 workspace.ChildAdded:Connect(function(v)
     task.delay(1, function()
+        -- Check if the object added is a character model (player or NPC)
         if v:FindFirstChild("Head") and v:FindFirstChild("Torso") then
             processedCache[v] = nil
-            char:updatehitbox()
+            -- Update hitbox for the new character
+            char:updatehitbox({ model = v })
         end
     end)
 end)
 
+-- Update hitbox when a player is removed
 game:GetService("Players").PlayerRemoving:Connect(function(player)
     for _, v in pairs(PlayerList) do
         if v == player then
@@ -535,33 +489,22 @@ game:GetService("Players").PlayerRemoving:Connect(function(player)
     end
 end)
 
--- Function to toggle hitbox
-local function toggleHitbox(state)
-    h.enabled = state
-    char:updatehitbox()
-end
-
--- Function to update hitbox size
-local function updateHitboxSize(x, y, z)
-    h.sizeX = x
-    h.sizeY = y
-    h.sizeZ = z
-    checkSizes()
-    char:updatehitbox()
-end
-
--- Function to update transparency
-local function updateTransparency(value)
-    for _, v in pairs(PlayerList) do
-        local t = v.model.Torso
-        if t then
-            t.Transparency = value
+-- Hook into character respawn to update the hitbox
+game:GetService("Players").PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        -- Wait for the character's torso to load
+        local torso = character:WaitForChild("Torso", 5)
+        local head = character:WaitForChild("Head", 5)
+        if torso and head then
+            processedCache[character] = nil
+            char:updatehitbox({ model = character })
         end
-    end
-end
+    end)
+end)
 
-local hitboxOverrider = true
+local hitboxOverrider = false
 
+-- Function to generate scale factors based on pitch
 local function generateScaleFactors()
     local scaleFactors = {}
     local baseScales = {0.008, 0.009, 0.008}
@@ -619,7 +562,7 @@ mt.__namecall = function(...)
     if method == "FireServer" then
         local eventId, eventType, hitPart = args[2], args[3], args[7]
 
-        if eventId == 10 and eventType == "Hit" and (hitPart == "Torso" or hitPart == "Head") then
+        if eventId == 10 and eventType == "Hit" and hitPart == "Torso" or hitPart == "Head" then
             local genVector = char:GenVector(args[9])
             args[8] = Vector3.new(genVector.X, genVector.Y, genVector.Z)
         end
@@ -635,10 +578,12 @@ local oldIndex = meta.__namecall
 meta.__namecall = function(...)
     local method = getnamecallmethod()
     local args = {...}
-    if args[2] == 10 and args[3] == "Hit" and args[7] == "Torso" and hitboxOverrider then
+    if args[2] == 10 and args[3] == "Hit" and args[7] == "Torso" and hitboxoverrider then
         args[7] = "Head"
     end
     return oldIndex(table.unpack(args))
 end
 
 setreadonly(meta, true)
+
+-- Remove the UI toggle and slider-related code
