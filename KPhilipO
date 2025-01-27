@@ -93,7 +93,7 @@ local RunService = game:GetService("RunService")
 
 local FOVCircle = Drawing.new("Circle")
 FOVCircle.Position = Vector2.new(Camera.ViewportSize.X/2,Camera.ViewportSize.Y/2)
-FOVCircle.Radius = 40
+FOVCircle.Radius = 70
 FOVCircle.Color = Color3.fromRGB(45, 116, 202)
 FOVCircle.Visible = true
 
@@ -115,7 +115,7 @@ getgenv().SilentEnabled = true
 Config = {
     Manipulation = {
         Enabled = true,
-        Angles = 5,
+        Angles = 40,
         Radius = 6,
         Direction = "Normal",
         Vector = Vector3.new(0, 0, 0)
