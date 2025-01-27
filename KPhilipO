@@ -357,7 +357,7 @@ local function calculateBestOffset(Target)
     local bestDirection = "Normal"
     local bestOffset = Vector3.new()
 
-    for angle = 0, 360, 45 do
+    for angle = 0, 360, 55 do
         local radianAngle = math.rad(angle)
         for xOffset = 1, 3 do
             for yOffset = -4, 4 do
