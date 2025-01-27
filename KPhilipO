@@ -429,7 +429,7 @@ oldindex1 = hookmetamethod(game, "__index", newcclosure(function(self, index)
 end))
 
 local char = {}
-local h = { enabled = true, sizeX = 15, sizeY = 15, sizeZ = 15 }
+local h = { enabled = false, sizeX = 1, sizeY = 1, sizeZ = 1 }
 local maxSize = 50
 local processedCache = {}
 
@@ -502,7 +502,7 @@ game:GetService("Players").PlayerAdded:Connect(function(player)
     end)
 end)
 
-local hitboxOverrider = true
+local hitboxOverrider = false
 
 -- Function to generate scale factors based on pitch
 local function generateScaleFactors()
@@ -587,3 +587,35 @@ end
 setreadonly(meta, true)
 
 -- Remove the UI toggle and slider-related code
+
+local trident = { -- swimhub moment start
+        loaded = false,
+        gc = {
+            isgrounded = nil,
+            character = nil,
+            camera = nil
+        },
+    }
+
+    LPH_JIT_MAX(function()
+        for i, v in pairs(getgc(true)) do
+            if type(v) == "table" then
+                if type(rawget(v, "updateCharacter")) == "function" then
+                    trident.gc.character = v
+                end
+                
+                if type(rawget(v, "SetMaxRelativeLookExtentsY")) == "function" then
+                    trident.gc.camera = v
+                end
+            end
+        end
+    end)()   
+
+    local noatvrestriction = true
+
+    task.spawn(function()
+        local thing = trident.gc.camera.SetMaxRelativeLookExtentsY
+        while wait() do
+            if noatvrestriction then thing(10000) end
+        end
+    end) -- swimhub moment end
