@@ -425,7 +425,7 @@ oldindex1 = hookmetamethod(game, "__index", newcclosure(function(self, index)
     if not checkcaller() and (index == "CanCollide" or index == "Transparency" or index == "Size") and (self.Name == "Torso" or self.Name == "Head") then
         return ogmod[self.Name][index]
     end
-    return oldindex1(self,index)
+    return oldindex1(self, index)
 end))
 
 local char = {}
@@ -433,23 +433,33 @@ local h = { enabled = true, sizeX = 15, sizeY = 15, sizeZ = 15 }
 local maxSize = 50
 local processedCache = {}
 
--- Function to check if a model is a player or an NPC
-local function isPlayerOrNPC(model)
-    return model:FindFirstChild("HumanoidRootPart") or model:FindFirstChild("Torso")
-end
-
--- Update hitbox for players and NPCs
+-- Function to update hitboxes for all characters (players and NPCs)
 function char:updatehitbox()
-    for _, v in pairs(PlayerList) do
-        if not processedCache[v] then
-            if isPlayerOrNPC(v.model) and not v.sleeping then
-                local t = v.model:FindFirstChild("Torso")
-                if t then
-                    t.Size = h.enabled and Vector3.new(h.sizeX, h.sizeY, h.sizeZ) or Vector3.new(0.6530659198760986, 2.220424175262451, 1.4367451667785645)
-                    t.CanCollide = false
-                    t.Transparency = h.enabled and 0.8 or 0
+    for _, v in pairs(workspace:GetChildren()) do
+        -- Check if the object is a valid character model (player or NPC)
+        local humanoid = v:FindFirstChildOfClass("Humanoid")
+        local humanoidRootPart = v:FindFirstChild("HumanoidRootPart")
+        local torso = v:FindFirstChild("Torso")
+        
+        -- If it's a valid character (either player or NPC)
+        if (humanoid and humanoidRootPart) or (torso and v:IsA("Model") and not humanoid) then
+            -- If it's a player, check for additional conditions (e.g., not sleeping)
+            if humanoid then
+                -- Only modify players that are not sleeping (based on health)
+                if humanoid.Health > 0 then
+                    if torso then
+                        torso.Size = h.enabled and Vector3.new(h.sizeX, h.sizeY, h.sizeZ) or Vector3.new(0.6530659198760986, 2.220424175262451, 1.4367451667785645)
+                        torso.CanCollide = false
+                        torso.Transparency = h.enabled and 0.8 or 0
+                    end
                 end
-                processedCache[v] = true
+            else
+                -- For NPCs, apply the hitbox adjustments directly (no health check needed)
+                if torso then
+                    torso.Size = h.enabled and Vector3.new(h.sizeX, h.sizeY, h.sizeZ) or Vector3.new(0.6530659198760986, 2.220424175262451, 1.4367451667785645)
+                    torso.CanCollide = false
+                    torso.Transparency = h.enabled and 0.8 or 0
+                end
             end
         end
     end
@@ -471,66 +481,72 @@ local function checkSizes()
     end
     if naughty then
         local Player = game:GetService("Players").LocalPlayer
-        -- Uncomment to kick player if they exceed size limits
-        -- Player:Kick("Reason Expected You Overided A Check In Script")
+        -- Uncomment the line below if you want to kick the player when they override a check
+        --Player:Kick("Reason: Expected You Overrided A Check In Script")
     end
 end
 
+-- Handle new players joining
+game:GetService("Players").PlayerAdded:Connect(function(player)
+    -- Ensure hitbox is updated for the new player
+    player.CharacterAdded:Connect(function(character)
+        -- Wait for the character to fully load
+        wait(1)
+        processedCache[player] = nil
+        char:updatehitbox()
+    end)
+end)
+
+-- Handle new NPCs appearing
 workspace.ChildAdded:Connect(function(v)
     task.delay(1, function()
-        if isPlayerOrNPC(v) and v:FindFirstChild("Head") and v:FindFirstChild("Torso") then
+        -- Only apply hitbox changes to characters that have a "Torso" and "Head"
+        if v:FindFirstChild("Head") and v:FindFirstChild("Torso") then
             processedCache[v] = nil
             char:updatehitbox()
         end
     end)
 end)
 
-game:GetService("Players").PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        processedCache[character] = nil
-        char:updatehitbox()
-    end)
-end)
-
+-- Handle player removal
 game:GetService("Players").PlayerRemoving:Connect(function(player)
-    for _, v in pairs(PlayerList) do
+    for _, v in pairs(game:GetService("Players"):GetPlayers()) do
         if v == player then
             processedCache[v] = nil
         end
     end
 end)
 
--- Function to toggle hitbox using Enum "I"
-local function toggleHitboxWithKey()
-    -- Check if "I" key is pressed
-    local userInputService = game:GetService("UserInputService")
-    userInputService.InputBegan:Connect(function(input, gameProcessed)
-        if gameProcessed then return end
-        if input.KeyCode == Enum.KeyCode.I then
-            -- Toggle hitbox enabled/disabled state
-            h.enabled = not h.enabled
-            char:updatehitbox()
-        end
-    end)
+-- Create functions to enable/disable hitbox size adjustments manually
+
+function toggleHitbox(state)
+    h.enabled = state
+    char:updatehitbox()
 end
 
-toggleHitboxWithKey() -- Call the function to toggle hitbox with "I" key press
-
--- Function to update hitbox size
-local function updateHitboxSize(x, y, z)
-    h.sizeX = x
-    h.sizeY = y
-    h.sizeZ = z
+function setHitboxSizeX(value)
+    h.sizeX = value
     checkSizes()
     char:updatehitbox()
 end
 
--- Function to update transparency
-local function updateTransparency(value)
-    for _, v in pairs(PlayerList) do
-        local t = v.model.Torso
-        if t then
-            t.Transparency = value
+function setHitboxSizeY(value)
+    h.sizeY = value
+    checkSizes()
+    char:updatehitbox()
+end
+
+function setHitboxSizeZ(value)
+    h.sizeZ = value
+    checkSizes()
+    char:updatehitbox()
+end
+
+function setTransparency(value)
+    for _, v in pairs(workspace:GetChildren()) do
+        local torso = v:FindFirstChild("Torso")
+        if torso then
+            torso.Transparency = value
         end
     end
 end
@@ -560,8 +576,8 @@ end
 local scaleFactors = generateScaleFactors()
 
 function char:GenVector(targetPos)
-    local direction = (targetPos - Camera.CFrame.Position).unit
-    local lookDirection = Camera.CFrame.LookVector
+    local direction = (targetPos - game.Workspace.CurrentCamera.CFrame.Position).unit
+    local lookDirection = game.Workspace.CurrentCamera.CFrame.LookVector
 
     local pitch = math.deg(math.asin(lookDirection.Y))
 
@@ -574,7 +590,7 @@ function char:GenVector(targetPos)
         end
     end
 
-    local magnitude = (targetPos - Camera.CFrame.Position).Magnitude
+    local magnitude = (targetPos - game.Workspace.CurrentCamera.CFrame.Position).Magnitude
 
     return Vector3.new(
         direction.X * (magnitude * scaleValues[1]),
@@ -594,7 +610,7 @@ mt.__namecall = function(...)
     if method == "FireServer" then
         local eventId, eventType, hitPart = args[2], args[3], args[7]
 
-        if eventId == 10 and eventType == "Hit" and hitPart == "Torso" or hitPart == "Head" then
+        if eventId == 10 and eventType == "Hit" and (hitPart == "Torso" or hitPart == "Head") then
             local genVector = char:GenVector(args[9])
             args[8] = Vector3.new(genVector.X, genVector.Y, genVector.Z)
         end
@@ -610,7 +626,7 @@ local oldIndex = meta.__namecall
 meta.__namecall = function(...)
     local method = getnamecallmethod()
     local args = {...}
-    if args[2] == 10 and args[3] == "Hit" and args[7] == "Torso" and hitboxoverrider then
+    if args[2] == 10 and args[3] == "Hit" and args[7] == "Torso" and hitboxOverrider then
         args[7] = "Head"
     end
     return oldIndex(table.unpack(args))
