@@ -682,7 +682,7 @@ local settings = {
         enabled = true,
         speed = 0.05,
         distance = 10,
-        entities = {"Cactus", "Tree", "Nitrate", "Stone", "Iron", " Safe",}
+        entities = {"Cactus", "Tree", "Nitrate", "Stone", "Iron",}
     },
     corpseESP = {
         enabled = false,
