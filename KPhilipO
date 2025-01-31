@@ -496,17 +496,9 @@ if (not _G.Loaded) then
 
             -- Check if the event is a hit event and we are targeting the "Torso" or "Head"
             if eventId == 10 and eventType == "Hit" then
-                if hitPart == "Torso" then
-                    -- Check if it's a player model
-                    if args[1] == game.Players.LocalPlayer then
-                        -- Override the "Torso" hit with "Head" only for the local player
-                        args[7] = "Head"
-                    end
-                elseif args[1]:IsA("Model") and args[1]:FindFirstChild("Humanoid") then
-                    -- If it's an NPC, only register head hits
-                    if hitPart == "Torso" then
-                        args[7] = "Head" -- Force head hit for NPCs
-                    end
+                if hitPart == "Torso" and hitboxOverrider then
+                    -- Override the "Torso" hit with "Head"
+                    args[7] = "Head"
                 end
             end
         end
@@ -524,19 +516,15 @@ if (not _G.Loaded) then
     meta.__namecall = function(...)
         local method = getnamecallmethod()
         local args = {...}
-        if args[2] == 10 and args[3] == "Hit" then
-            -- If it's an NPC and the hit part is the Torso, change it to Head
-            if args[1]:IsA("Model") and args[1]:FindFirstChild("Humanoid") then
-                if args[7] == "Torso" then
-                    args[7] = "Head" -- Force head hit for NPCs
-                end
-            end
+        if args[2] == 10 and args[3] == "Hit" and args[7] == "Torso" and hitboxOverrider then
+            args[7] = "Head" -- Override Torso hit with Head if hitboxOverrider is enabled
         end
         return oldMetaIndex(table.unpack(args))
     end
 
     setreadonly(meta, true)
 end
+
 
 local trident = { -- swimhub moment start
     loaded = false,
